@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d7c8a" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1520" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="血壓小測驗">
+<meta name="description" content="遠離高血壓：7 題自我檢測與重點複習">
+<title>遠離高血壓｜血壓小測驗</title>
+<style>
+  :root{
+    --bg:#f4f7fa; --card:#ffffff; --ink:#0f2233; --muted:#5b7285;
+    --brand:#0d7c8a; --brand-2:#12a3a8; --brand-soft:#e3f3f4;
+    --ok:#147a4c; --ok-soft:#e2f4ea; --bad:#b93a2c; --bad-soft:#fbe7e4;
+    --line:#e2eaf1; --shadow:0 8px 24px rgba(15,34,51,.08);
+    --radius:18px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0b1520; --card:#132230; --ink:#e8f1f7; --muted:#9db2c2;
+      --brand:#3cc3c7; --brand-2:#2ea9ad; --brand-soft:#12333a;
+      --ok:#4ecb8d; --ok-soft:#123227; --bad:#ff8a7a; --bad-soft:#3a1c18;
+      --line:#22394b; --shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei","Segoe UI",sans-serif;
+    line-height:1.65; font-size:16px;
+    min-height:100dvh;
+    padding:calc(12px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:560px;margin:0 auto}
+
+  /* header */
+  header{display:flex;align-items:center;gap:10px;margin:6px 2px 18px}
+  .logo{width:40px;height:40px;flex:0 0 40px;border-radius:13px;background:linear-gradient(145deg,var(--brand),var(--brand-2));display:grid;place-items:center;box-shadow:var(--shadow)}
+  .logo svg{width:23px;height:23px;display:block}
+  header h1{font-size:1.05rem;margin:0;letter-spacing:.02em}
+  header p{margin:0;font-size:.78rem;color:var(--muted)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+  .stack{display:grid;gap:16px}
+
+  h2{font-size:1.35rem;margin:0 0 6px;line-height:1.35}
+  h3{font-size:1rem;margin:0 0 8px}
+  p{margin:0 0 10px}
+  .muted{color:var(--muted);font-size:.9rem}
+  .small{font-size:.82rem}
+
+  button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;min-height:52px;padding:14px 18px;border-radius:14px;
+    background:linear-gradient(145deg,var(--brand),var(--brand-2));color:#fff;
+    font-weight:700;font-size:1rem;letter-spacing:.02em;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:active{transform:scale(.985);filter:brightness(.96)}
+  .btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--line);font-weight:600}
+  .btn.ghost:active{background:var(--brand-soft)}
+  .btn[disabled]{opacity:.45;pointer-events:none}
+  .btn-row{display:grid;gap:10px}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-size:.78rem;font-weight:700;letter-spacing:.04em}
+
+  /* start screen */
+  .hero{padding:26px 20px}
+  .hero h2{font-size:1.6rem}
+  .facts{display:grid;gap:10px;margin:16px 0 20px}
+  .fact{display:flex;gap:10px;align-items:flex-start;font-size:.92rem}
+  .fact b{color:var(--brand);font-variant-numeric:tabular-nums}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--brand);margin-top:.52em;flex:0 0 7px}
+
+  /* quiz */
+  .quiz-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .counter{font-size:.85rem;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+  .bar{height:7px;border-radius:999px;background:var(--line);overflow:hidden;margin-bottom:20px}
+  .bar > i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--brand-2));transition:width .3s cubic-bezier(.2,.7,.3,1)}
+  .q-text{font-size:1.12rem;font-weight:700;line-height:1.55;margin:0 0 18px}
+  .opts{display:grid;gap:10px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;
+    padding:14px 15px;border-radius:14px;border:1.5px solid var(--line);
+    background:var(--card);font-size:.97rem;line-height:1.5;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .opt:active{transform:scale(.99)}
+  .opt .k{
+    flex:0 0 26px;height:26px;border-radius:8px;display:grid;place-items:center;
+    background:var(--brand-soft);color:var(--brand);font-size:.82rem;font-weight:800;
+  }
+  .opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.correct .k{background:var(--ok);color:#fff}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.wrong .k{background:var(--bad);color:#fff}
+  .opt.dim{opacity:.5}
+
+  .exp{margin-top:14px;padding:14px 15px;border-radius:14px;background:var(--brand-soft);border:1px solid transparent;display:none}
+  .exp.show{display:block;animation:rise .22s ease}
+  .exp .tag{font-size:.78rem;font-weight:800;letter-spacing:.06em;color:var(--brand);display:block;margin-bottom:4px}
+  .exp p{margin:0;font-size:.92rem}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* result */
+  .score{display:flex;align-items:baseline;gap:6px;justify-content:center;margin:6px 0 2px}
+  .score b{font-size:3.2rem;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .score span{color:var(--muted);font-size:1.05rem;font-weight:600}
+  .verdict{text-align:center;font-weight:700;margin:10px 0 4px}
+  .verdict-sub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:18px}
+  .wrong-list{display:grid;gap:10px;margin-top:6px}
+  .wrong-item{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:13px 14px;font-size:.9rem}
+  .wrong-item .q{font-weight:700;margin-bottom:6px}
+  .wrong-item .line{display:flex;gap:8px;margin-top:2px}
+  .wrong-item .line i{font-style:normal;font-weight:800;flex:0 0 auto}
+  .no-wrong{text-align:center;color:var(--ok);font-weight:700;padding:10px 0}
+
+  /* review */
+  details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0;overflow:hidden}
+  details + details{margin-top:10px}
+  summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;font-size:.95rem;display:flex;gap:10px;align-items:flex-start;position:relative}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";margin-left:auto;color:var(--brand);font-weight:800;font-size:1.1rem;line-height:1.2}
+  details[open] summary::after{content:"–"}
+  details .body{padding:0 16px 15px;font-size:.9rem;color:var(--ink)}
+  details .body p{margin:0 0 6px}
+  details .body p:last-child{margin-bottom:0}
+
+  footer{margin:22px 4px 0;color:var(--muted);font-size:.76rem;line-height:1.6;text-align:center}
+  hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
+  [hidden]{display:none !important}
+  :focus-visible{outline:3px solid var(--brand-2);outline-offset:2px;border-radius:10px}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12h3l2-5 3.5 10L15 9l2 3h4"/>
+      </svg>
+    </div>
+    <div>
+      <h1>遠離高血壓</h1>
+      <p>血壓小測驗 ・ 7 題自我檢測</p>
+    </div>
+  </header>
+
+  <!-- ============ 開始 ============ -->
+  <section id="screen-start" class="stack">
+    <div class="card hero">
+      <span class="pill">衛教自我檢測</span>
+      <h2 style="margin-top:12px">你對高血壓<br>了解多少？</h2>
+      <p class="muted">7 題、大約 3 分鐘。每題作答後會立即說明，最後可以看到成績與錯題解析。</p>
+      <div class="facts">
+        <div class="fact"><span class="dot"></span><span>高血壓是「沉默的殺手」，<b>超過 50%</b> 的人沒有症狀</span></div>
+        <div class="fact"><span class="dot"></span><span>2022 新版標準：<b>130/80 mmHg</b> 就是高血壓</span></div>
+        <div class="fact"><span class="dot"></span><span>台灣 18 歲以上，每年至少量 <b>1 次</b>血壓</span></div>
+      </div>
+      <button class="btn" id="btn-start">開始測驗</button>
+      <p class="small muted" id="best-line" style="text-align:center;margin:12px 0 0"></p>
+    </div>
+    <button class="btn ghost" id="btn-review-from-start">先看重點複習</button>
+  </section>
+
+  <!-- ============ 測驗 ============ -->
+  <section id="screen-quiz" class="stack" hidden>
+    <div class="card">
+      <div class="quiz-top">
+        <span class="counter" id="counter">第 1 / 7 題</span>
+        <span class="pill" id="topic">觀念</span>
+      </div>
+      <div class="bar" role="progressbar" aria-label="作答進度" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0"><i id="bar-fill"></i></div>
+
+      <p class="q-text" id="q-text"></p>
+      <div class="opts" id="opts" role="group" aria-label="選項"></div>
+
+      <div class="exp" id="exp" aria-live="polite">
+        <span class="tag" id="exp-tag">解析</span>
+        <p id="exp-text"></p>
+      </div>
+
+      <div style="margin-top:18px">
+        <button class="btn" id="btn-next" disabled>下一題</button>
+      </div>
+    </div>
+    <button class="btn ghost" id="btn-quit">結束測驗</button>
+  </section>
+
+  <!-- ============ 結果 ============ -->
+  <section id="screen-result" class="stack" hidden>
+    <div class="card">
+      <p class="muted small" style="text-align:center;margin-bottom:0">你的成績</p>
+      <div class="score"><b id="score-num">0</b><span>/ 7</span></div>
+      <p class="verdict" id="verdict"></p>
+      <p class="verdict-sub" id="verdict-sub"></p>
+      <div class="btn-row">
+        <button class="btn" id="btn-again">再挑戰一次</button>
+        <button class="btn ghost" id="btn-review">看錯題與解析</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>錯題回顧</h3>
+      <div id="wrong-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ 複習 ============ -->
+  <section id="screen-review" class="stack" hidden>
+    <div class="card">
+      <span class="pill">重點複習</span>
+      <h2 style="margin-top:12px;font-size:1.25rem">記住這 10 件事</h2>
+      <p class="muted small">點開每一項看說明。讀完再回去測驗，分數通常會明顯進步。</p>
+    </div>
+
+    <div id="review-list"></div>
+
+    <div class="card">
+      <div class="btn-row">
+        <button class="btn" id="btn-quiz-from-review">開始測驗</button>
+        <button class="btn ghost" id="btn-home">回首頁</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    資料來源：遠離高血壓簡報（林志玲、顏秀穎）／衛福部國健署 722 居家量血壓／台灣高血壓學會 2022 指引。<br>
+    本工具僅供衛教參考，不能取代醫師診斷與治療。
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var QUESTIONS = [
+    {
+      topic: "觀念",
+      q: "高血壓常被稱為「沉默的殺手」，最主要的原因是什麼？",
+      opts: [
+        "一旦血壓偏高，就會馬上出現頭暈、頭痛等明顯症狀",
+        "超過一半的患者平時沒有明顯症狀，容易延誤發現",
+        "只有老年人才會得到，年輕人不必擔心",
+        "血壓高時一定會昏迷，很容易察覺"
+      ],
+      a: 1,
+      exp: "高血壓是「無聲殺手」，超過 50% 的患者沒有症狀。很多人血壓已經很高卻毫不自覺，因此不能只憑「有沒有不舒服」判斷，定期測量才是關鍵。"
+    },
+    {
+      topic: "診斷",
+      q: "根據 2022 年 5 月新版的高血壓定義，下列哪一組數值已達到「高血壓」？",
+      opts: [
+        "118/76 mmHg",
+        "126/78 mmHg",
+        "132/84 mmHg",
+        "110/70 mmHg"
+      ],
+      a: 2,
+      exp: "新版定義：正常值為 <120/<80；收縮壓 ≥130 或舒張壓 ≥80 即為高血壓。132/84 兩項都超過，已達高血壓標準。"
+    },
+    {
+      topic: "控制目標",
+      q: "一般高血壓患者（18 歲以上成年人）的血壓控制目標，下列何者正確？",
+      opts: [
+        "收縮壓低於 150 mmHg 即可",
+        "低於 140/90 mmHg",
+        "低於 130/80 mmHg",
+        "越低越好，低於 100/60 mmHg"
+      ],
+      a: 2,
+      exp: "一般高血壓患者目標 <130/80；18 歲以上成人理想值 <120/80；慢性病等高風險者收縮壓 <130；80 歲以上長者收縮壓 <150。血壓並非越低越好。"
+    },
+    {
+      topic: "迷思",
+      q: "下列哪一個觀念是正確的？",
+      opts: [
+        "體型瘦的人不會得高血壓，不必量血壓",
+        "沒有頭暈、不舒服，就代表血壓正常",
+        "瘦的人若高鹽飲食、熬夜、壓力大或血管老化，血壓一樣可能偏高",
+        "年紀輕就不可能高血壓"
+      ],
+      a: 2,
+      exp: "體型不是唯一變數。高鹽飲食、熬夜、高壓、血管老化同樣會讓瘦的人血壓升高；高血壓也可能發生在任何年齡層，定期測量才是硬道理。"
+    },
+    {
+      topic: "併發症",
+      q: "高血壓長期控制不良，最可能造成下列哪一種後果？",
+      opts: [
+        "腦中風、心臟衰竭、腎功能衰退",
+        "近視度數快速加深",
+        "牙齒變黃、容易蛀牙",
+        "身高變矮、頭髮變白"
+      ],
+      a: 0,
+      exp: "血壓長期控制不良會傷害血管，造成腦中風、腦內出血、動脈硬化、心臟肥厚／衰竭、腎功能病變與衰退，也可能影響視網膜。"
+    },
+    {
+      topic: "預防",
+      q: "下列哪一項做法「無助於」預防高血壓？",
+      opts: [
+        "採 DASH 飲食、減少鹽分攝取",
+        "規律有氧運動、控制體重",
+        "戒菸、節制飲酒",
+        "天天熬夜，靠重口味宵夜抒壓"
+      ],
+      a: 3,
+      exp: "預防七大原則：DASH 飲食、減鹽、節制飲酒、體重控制、戒菸、運動、定期量血壓。熬夜與重口味宵夜（高鹽、高油）反而會讓血壓上升。"
+    },
+    {
+      topic: "量血壓",
+      q: "關於在家量血壓，下列哪一項是正確的做法？",
+      opts: [
+        "量之前先喝杯咖啡提神，比較清醒",
+        "量之前安靜坐著休息 5～10 分鐘，雙腳著地、上臂與心臟同高",
+        "翹腳坐著量比較放鬆，數值會比較準",
+        "剛跑完步馬上量，才能看出心臟夠不夠力"
+      ],
+      a: 1,
+      exp: "量血壓前安靜坐 5～10 分鐘，雙腳著地、除去上臂衣物，手臂平放桌面且上臂與心臟同高；前 30 分鐘避免激烈運動、抽菸與含咖啡因食物。"
+    }
+  ];
+
+  var REVIEW = [
+    ["高血壓是「沉默的殺手」", "超過 50% 的患者沒有明顯症狀，血壓已經很高也不自覺。沒有不舒服，不代表血壓正常。"],
+    ["不能只靠感覺判斷", "頭暈、頭痛等症狀不可靠，也可能出現在血壓已偏高的時候。定期測量才是硬道理。"],
+    ["2022 新版診斷標準", "正常 <120/<80 mmHg；收縮壓 ≥130 或舒張壓 ≥80 就是高血壓。"],
+    ["不同族群的目標值", "18 歲以上成人 <120/80；一般高血壓患者 <130/80；慢性病等高風險者收縮壓 <130；80 歲以上長者收縮壓 <150。"],
+    ["危險因子不只肥胖", "高鹽、過油、壓力大、膽固醇過高、肥胖都是危險因子；瘦的人若高鹽、熬夜、壓力大或血管老化，血壓一樣會高。"],
+    ["可能出現的併發症", "腦中風、腦內出血、動脈硬化、心臟肥厚／心臟衰竭、腎功能病變與衰退。"],
+    ["預防七大原則", "DASH 飲食、減少鹽分、節制飲酒、體重控制、戒菸、運動、定期量血壓。"],
+    ["運動這樣做", "每週至少 3 次、每次超過 30 分鐘的有氧運動（散步、游泳、園藝等）。血壓升高時不建議硬撐運動，應先依醫囑服藥。"],
+    ["722 居家量血壓", "連續 7 天、每天早晚各 1 回、每回 2 次（間隔 1 分鐘取平均）。18 歲以上每年至少量 1 次。"],
+    ["白袍高血壓", "在家 120/80、到醫院卻 150，是常見的「白袍高血壓」。以居家規律紀錄為準，回診時提供給醫師討論，不要自己嚇自己或自行停藥。"]
+  ];
+
+  var $ = function(id){ return document.getElementById(id); };
+  var screens = { start:$("screen-start"), quiz:$("screen-quiz"), result:$("screen-result"), review:$("screen-review") };
+  var state = { idx:0, answers:[], locked:false };
+  var BEST_KEY = "bpquiz.best.v1";
+
+  function show(name){
+    Object.keys(screens).forEach(function(k){ screens[k].hidden = (k !== name); });
+    window.scrollTo({ top:0, behavior:"instant" in document.documentElement.style ? "instant" : "auto" });
+  }
+
+  function readBest(){
+    try { return Number(localStorage.getItem(BEST_KEY) || 0); } catch(e){ return 0; }
+  }
+  function writeBest(v){
+    try { if (v > readBest()) localStorage.setItem(BEST_KEY, String(v)); } catch(e){}
+  }
+  function renderBest(){
+    var b = readBest();
+    $("best-line").textContent = b > 0 ? ("你的最佳成績：" + b + " / 7") : "";
+  }
+
+  function startQuiz(){
+    state = { idx:0, answers:[], locked:false };
+    renderQuestion();
+    show("quiz");
+  }
+
+  function renderQuestion(){
+    var q = QUESTIONS[state.idx];
+    var answered = state.answers[state.idx] !== undefined;
+
+    $("counter").textContent = "第 " + (state.idx + 1) + " / " + QUESTIONS.length + " 題";
+    $("topic").textContent = q.topic;
+    $("q-text").textContent = q.q;
+
+    var pct = ((state.idx + (answered ? 1 : 0)) / QUESTIONS.length) * 100;
+    $("bar-fill").style.width = pct + "%";
+    $("bar-fill").parentNode.setAttribute("aria-valuenow", String(state.idx + (answered ? 1 : 0)));
+
+    var box = $("opts");
+    box.innerHTML = "";
+    var letters = ["A","B","C","D"];
+    q.opts.forEach(function(text, i){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.innerHTML = '<span class="k">' + letters[i] + '</span><span>' + text + '</span>';
+      b.addEventListener("click", function(){ pick(i); });
+      box.appendChild(b);
+    });
+
+    if (answered){
+      paint(state.answers[state.idx]);
+    } else {
+      $("exp").classList.remove("show");
+      $("btn-next").disabled = true;
+      $("btn-next").textContent = (state.idx === QUESTIONS.length - 1) ? "看結果" : "下一題";
+    }
+  }
+
+  function pick(i){
+    if (state.answers[state.idx] !== undefined) return;
+    state.answers[state.idx] = i;
+    paint(i);
+    if (navigator.vibrate) { try { navigator.vibrate(12); } catch(e){} }
+  }
+
+  function paint(chosen){
+    var q = QUESTIONS[state.idx];
+    var buttons = $("opts").children;
+    for (var i = 0; i < buttons.length; i++){
+      buttons[i].disabled = true;
+      if (i === q.a) buttons[i].classList.add("correct");
+      else if (i === chosen) buttons[i].classList.add("wrong");
+      else buttons[i].classList.add("dim");
+    }
+    var good = chosen === q.a;
+    $("exp-tag").textContent = good ? "答對了 🎉" : "正確答案：" + ["A","B","C","D"][q.a];
+    $("exp-text").textContent = q.exp;
+    $("exp").classList.add("show");
+    $("btn-next").disabled = false;
+    $("btn-next").textContent = (state.idx === QUESTIONS.length - 1) ? "看結果" : "下一題";
+    $("exp").scrollIntoView({ block:"nearest", behavior:"smooth" });
+  }
+
+  function next(){
+    if (state.answers[state.idx] === undefined) return;
+    if (state.idx < QUESTIONS.length - 1){
+      state.idx++;
+      renderQuestion();
+      window.scrollTo({ top:0, behavior:"smooth" });
+    } else {
+      finish();
+    }
+  }
+
+  function finish(){
+    var score = 0;
+    QUESTIONS.forEach(function(q, i){ if (state.answers[i] === q.a) score++; });
+    writeBest(score);
+    renderBest();
+
+    $("score-num").textContent = String(score);
+    var v, s;
+    if (score === 7){ v = "🏆 血壓守門員"; s = "觀念滿分！可以帶著家人一起量血壓了。"; }
+    else if (score >= 5){ v = "👍 很有概念"; s = "再複習錯題，就能拿到滿分。"; }
+    else if (score >= 3){ v = "💪 基礎不錯"; s = "建議看一次「重點複習」，再挑戰一次。"; }
+    else { v = "📖 從複習開始"; s = "別擔心，先看「重點複習」，你會進步很快。"; }
+    $("verdict").textContent = v;
+    $("verdict-sub").textContent = s;
+
+    var list = $("wrong-list");
+    list.innerHTML = "";
+    var wrong = 0;
+    QUESTIONS.forEach(function(q, i){
+      if (state.answers[i] !== q.a){
+        wrong++;
+        var d = document.createElement("div");
+        d.className = "wrong-item";
+        d.innerHTML =
+          '<div class="q">' + q.q + '</div>' +
+          '<div class="line"><i style="color:var(--bad)">你的答案</i><span>' + (state.answers[i] == null ? "未作答" : q.opts[state.answers[i]]) + '</span></div>' +
+          '<div class="line"><i style="color:var(--ok)">正確答案</i><span>' + q.opts[q.a] + '</span></div>' +
+          '<div class="line" style="margin-top:8px;color:var(--muted)"><span>' + q.exp + '</span></div>';
+        list.appendChild(d);
+      }
+    });
+    if (wrong === 0){
+      list.innerHTML = '<p class="no-wrong">全部答對，太厲害了！</p>';
+    }
+    show("result");
+  }
+
+  function renderReview(){
+    var list = $("review-list");
+    list.innerHTML = "";
+    REVIEW.forEach(function(item){
+      var d = document.createElement("details");
+      d.innerHTML = '<summary>' + item[0] + '</summary><div class="body"><p>' + item[1] + '</p></div>';
+      list.appendChild(d);
+    });
+  }
+
+  // events
+  $("btn-start").addEventListener("click", startQuiz);
+  $("btn-again").addEventListener("click", startQuiz);
+  $("btn-next").addEventListener("click", next);
+  $("btn-quit").addEventListener("click", function(){
+    if (confirm("確定要結束這次測驗嗎？作答進度不會保留。")) show("start");
+  });
+  $("btn-review").addEventListener("click", function(){ show("review"); });
+  $("btn-review-from-start").addEventListener("click", function(){ show("review"); });
+  $("btn-quiz-from-review").addEventListener("click", startQuiz);
+  $("btn-home").addEventListener("click", function(){ show("start"); });
+
+  renderBest();
+  renderReview();
+
+  // 鍵盤 1-4 / A-D 作答，Enter 下一題（桌機也能用）
+  document.addEventListener("keydown", function(e){
+    if ($("screen-quiz").hidden) return;
+    var k = e.key.toUpperCase();
+    var map = { "1":0, "2":1, "3":2, "4":3, "A":0, "B":1, "C":2, "D":3 };
+    if (map[k] !== undefined){ pick(map[k]); }
+    else if (e.key === "Enter" && !$("btn-next").disabled){ next(); }
+  });
+})();
+</script>
+</body>
+</html>
